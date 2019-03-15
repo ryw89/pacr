@@ -1,0 +1,24 @@
+#+TITLE:     pacr
+#+AUTHOR:    Ryan Whittingham
+#+EMAIL:     (concat "ryanwhittingham89" at-sign "gmail.com")
+#+DESCRIPTION: Generate Arch Linux PKGBUILDs for R packages
+#+KEYWORDS:  archlinux, pacman, r
+#+LANGUAGE:  en
+#+OPTIONS:   H:4 num:nil toc:2 p:t
+
+This project will let you easily generate and install Arch Linux
+PKGBUILDs for R packages available on CRAN.
+
+* Requirements
+
+- Ruby
+- git
+- =nokogiri=
+
+* Usage
+
+To be described...
+
+* TODO Things to do
+
+- Pretty much everything
