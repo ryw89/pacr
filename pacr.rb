@@ -15,9 +15,38 @@ class CreatePkgBuild
     @cran_page_body = doc.at('body').text
   end
 
-  # Parse CRAN page take for needed info.
+  # Parse CRAN page for needed info.
   def cran_page_parse
-    depends = @cran_page_body.split("Depends:\n")[1].split("\n")[0]
+    # Create 'depends' field for PKGBUILD
+    depends   = @cran_page_body.split("Depends:\n")[1]
+    depends   = depends.split("\n")[0] unless depends.nil?
+    depends   = depends.split(', ') unless depends.nil?
+    imports   = @cran_page_body.split("Imports:\n")[1]
+    imports   = imports.split("\n")[0] unless imports.nil?
+    imports   = imports.split(', ') unless imports.nil?
+    linkingto = @cran_page_body.split("LinkingTo:\n")[1]
+    linkingto = linkingto.split("\n")[0] unless linkingto.nil?
+    linkingto = linkingto.split(', ') unless linkingto.nil?
+
+    dependencies = [depends, imports, linkingto].reject do |x|
+      x.nil? || x.empty?
+    end
+
+    dependencies = dependencies.flatten
+
+    @arch_depends = []
+    dependencies.each do |dependency|
+      # Regex to get package name, which will precede a space or comma
+      arch_depend = dependency[/^[A-Za-z0-9]+/i]
+
+      # Dependency should be R package if not R itself, so add r-
+      # for Arch package name, per official guidelines
+      arch_depend = "r-#{arch_depend}" unless arch_depend == 'R'
+      arch_depend.downcase!
+      puts(arch_depend)
+
+      # TODO: Adding in versions
+    end
   end
 end
 
@@ -28,14 +57,14 @@ end
 # pkgname=#{arch_pkgname}
 # pkgver=#{arch_pkgver}
 # pkgrel=1
-# pkgdesc=\"#{pkgdesc}\"
+# pkgdesc=\"#{arch_pkgdesc}\"
 # url=\"https://cran.r-project.org/package=#{pkg}\"
 # arch=('i686' 'x86_64')
-# license=(#{license})
-# depends=(#{depends})
-# optdepends=(#{optdepends})
+# license=(#{arch_license})
+# depends=(#{arch_depends})
+# optdepends=(#{arch_optdepends})
 # source=(\"http://cran.r-project.org/src/contrib/${_cranname}_${_cranver}.tar.gz\")
-# md5sums=(#{md5sums})
+# md5sums=(#{arch_md5sums})
 #
 # package() {
 #    mkdir -p ${pkgdir}/usr/lib/R/library
