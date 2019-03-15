@@ -11,6 +11,7 @@ PKGBUILDs for R packages available on CRAN.
 
 * Requirements
 
+- R
 - Ruby
 - git
 - =nokogiri=
