@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# coding: utf-8
 
 require 'nokogiri'
 require 'open-uri'
@@ -31,22 +32,38 @@ class CreatePkgBuild
     dependencies = [depends, imports, linkingto].reject do |x|
       x.nil? || x.empty?
     end
-
     dependencies = dependencies.flatten
 
     @arch_depends = []
     dependencies.each do |dependency|
-      # Regex to get package name, which will precede a space or comma
-      arch_depend = dependency[/^[A-Za-z0-9]+/i]
+      arch_depend = dependency.split(' ')[0]
 
-      # Dependency should be R package if not R itself, so add r-
-      # for Arch package name, per official guidelines
+      # Dependency should be R package if not R itself, so prepend r-
+      # for Arch package name, as per official guidelines
       arch_depend = "r-#{arch_depend}" unless arch_depend == 'R'
       arch_depend.downcase!
-      puts(arch_depend)
 
-      # TODO: Adding in versions
+      version = dependency[/\((.*?)\)/m, 1]  # Regex between parentheses
+
+      # PKGBUILD guidelines do not allow '-' in version number, so
+      # replace with dot
+      version.gsub!('-', '.') unless version.nil?
+      arch_depend = "#{arch_depend}#{version}"
+
+      replacements = [['≥', '>='], ['≤', '<='], [' ', '']]
+      replacements.each do |replacement|
+        arch_depend.gsub!(replacement[0], replacement[1])
+      end
+
+      arch_depend = "'#{arch_depend}'"
+      @arch_depends.push(arch_depend)
+      
     end
+
+    @arch_depends = @arch_depends.join(' ')
+
+    # NEXT Do pkgname, pkgver, and license
+    
   end
 end
 
