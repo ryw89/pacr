@@ -18,6 +18,20 @@ class CreatePkgBuild
 
   # Parse CRAN page for needed info.
   def cran_page_parse
+    # Create 'pkgname' field for PKGBUILD
+    @arch_pkgname = "r-#{@pkg}".downcase!
+
+    # Create 'pkgver' field for PKGBUILD
+    # PKGBUILD guidelines do not allow '-' in version number, so
+    # replace with underscore
+    @cranver = @cran_page_body.split("Version:\n")[1].split("\n")[0]
+    @arch_pkgver = @cranver.gsub('-', '_')
+
+    # Create 'pkgdesc' field for PKGBUILD
+    # Note, however, that this default description may not meet Arch
+    # PKGBUILD guidelines.
+    @arch_pkgdesc = @cran_page_body.split("#{@pkg}:")[1].split("\n")[0]
+
     # Create 'depends' field for PKGBUILD
     depends   = @cran_page_body.split("Depends:\n")[1]
     depends   = depends.split("\n")[0] unless depends.nil?
