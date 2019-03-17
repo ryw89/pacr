@@ -46,8 +46,8 @@ class CreatePkgBuild
       version = dependency[/\((.*?)\)/m, 1]  # Regex between parentheses
 
       # PKGBUILD guidelines do not allow '-' in version number, so
-      # replace with dot
-      version.gsub!('-', '.') unless version.nil?
+      # replace with underscore
+      version.gsub!('-', '_') unless version.nil?
       arch_depend = "#{arch_depend}#{version}"
 
       replacements = [['≥', '>='], ['≤', '<='], [' ', '']]
