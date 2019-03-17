@@ -120,7 +120,9 @@ class CreatePkgBuild
     optdepends = optdepends.split(', ') unless optdepends.nil?
 
     @arch_optdepends = []
-    unless optdepends.nil?
+    if optdepends.nil?
+      @arch_optdepends = ''
+    else
       optdepends.each do |dependency|
         arch_optdepend = dependency.split(' ')[0]
         arch_optdepend.downcase!
@@ -146,7 +148,6 @@ class CreatePkgBuild
         arch_optdepend = "'#{arch_optdepend}'"
         @arch_optdepends.push(arch_optdepend)
         @arch_optdepends = @arch_optdepends.join(' ')
-        
       end
     end
   end
@@ -157,8 +158,8 @@ class CreatePkgBuild
 _cranname=#{@pkg}
 _cranver=#{@cranver}
 pkgname=#{@arch_pkgname}
-pkgver=(#{@arch_pkgver})
-pkgrel=(1)
+pkgver=#{@arch_pkgver}
+pkgrel=1
 pkgdesc=\"#{@arch_pkgdesc}\"
 url=\"https://cran.r-project.org/package=#{@pkg}\"
 arch=('i686' 'x86_64')
