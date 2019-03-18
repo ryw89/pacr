@@ -90,9 +90,16 @@ class CreatePkgBuild
     # Remove explanatory license notes inside square brackets
     # and links to license files sometimes found on CRAN 
     license.gsub!(/\[.*?\]/, '')
-    license.gsub!("+ file LICENSE", '')
-    license = license.split('|') # CRAN seperates licenses by |
+
+    # Remove CRAN links to license files
+    license.gsub!('file LICENSE', '')
+    license.gsub!('+', '')
+
+    # CRAN seperates licenses by |
+    license = license.split('|')
+
     license = license.map { |x| x.strip }
+    license.reject! { |x| x.nil? || x.empty? }
     license = license.map { |x| "'#{x}'" }
     @arch_license = license.join(' ')
 
@@ -100,15 +107,15 @@ class CreatePkgBuild
     depends   = @cran_page_table.split("Depends:")[1]
     depends   = depends.split("\n")[0] unless depends.nil?
     depends   = depends.split(', ') unless depends.nil?
-    
+
     imports   = @cran_page_table.split("Imports:")[1]
     imports   = imports.split("\n")[0] unless imports.nil?
     imports   = imports.split(', ') unless imports.nil?
-    
+
     linkingto = @cran_page_table.split("LinkingTo:")[1]
     linkingto = linkingto.split("\n")[0] unless linkingto.nil?
     linkingto = linkingto.split(', ') unless linkingto.nil?
-    
+
     sysreqs   = @cran_page_table.split("SystemRequirements:")[1]
     sysreqs   = sysreqs.split("\n")[0] unless sysreqs.nil?
     sysreqs   = sysreqs.split(', ') unless sysreqs.nil?
