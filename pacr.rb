@@ -9,8 +9,8 @@ class CreatePkgBuild
   def initialize(pkg)
     @pkg = pkg
     begin
-    url = "https://cran.r-project.org/web/packages/#{@pkg}/index.html"
-    doc = Nokogiri::HTML(open(url))
+      url = "https://cran.r-project.org/web/packages/#{@pkg}/index.html"
+      doc = Nokogiri::HTML(open(url))
     rescue OpenURI::HTTPError => error
       response = error.io
       abort("#{response.status.join(' ')}\nExiting pacr.")
@@ -26,11 +26,41 @@ class CreatePkgBuild
       cells = tr.search('th, td')
       # Newlines present in table cells, at least as parsed by
       # nokogiri.
-      @cran_page_table.push(cells.text.gsub("\n", ""))
+      @cran_page_table.push(cells.text.gsub("\n", ''))
     end
-
     @cran_page_table = @cran_page_table.join("\n")
+  end
 
+  # Parse array of dependencies, making Arch PKGBUILD-friendly names
+  # and versions
+  def dependency_parse(dep_array)
+    arch_depends_array = []
+    dep_array.each do |dependency|
+      arch_depend = dependency.split(' ')[0]
+
+      # Dependency should be R package if not R itself, so prepend r-
+      # for Arch package name, as per official guidelines
+      arch_depend = "r-#{arch_depend}" unless arch_depend == 'R'
+      arch_depend.downcase!
+
+      # Version between parentheses on CRAN
+      version = dependency[/\((.*?)\)/m, 1]
+
+      # PKGBUILD guidelines do not allow '-' in version number,
+      # replace with underscore
+      version.gsub!('-', '_') unless version.nil?
+      arch_depend = "#{arch_depend}#{version}"
+
+      replacements = [['≥', '>='], ['≤', '<='], [' ', '']]
+      replacements.each do |replacement|
+        arch_depend.gsub!(replacement[0], replacement[1])
+      end
+
+      arch_depend = "'#{arch_depend}'"
+      puts(arch_depend)
+      arch_depends_array.push(arch_depend)
+    end
+    return(arch_depends_array)
   end
 
   # Parse CRAN page for needed info.
@@ -41,7 +71,7 @@ class CreatePkgBuild
     # Create 'pkgver' field for PKGBUILD
     # PKGBUILD guidelines do not allow '-' in version number, so
     # replace with underscore
-    @cranver = @cran_page_table.split("Version:")[1].split("\n")[0]
+    @cranver = @cran_page_table.split('Version:')[1].split("\n")[0]
     @arch_pkgver = @cranver.gsub('-', '_')
 
     # Create 'pkgdesc' field for PKGBUILD
@@ -60,11 +90,11 @@ class CreatePkgBuild
 
     # Remove explanatory license notes inside square brackets
     # and links to license files sometimes found on CRAN 
-    license.gsub!(/\[.*?\]/, "")
-    license.gsub!("+ file LICENSE", "")
-    license = license.split("|")  # CRAN seperates licenses by |
-    license = license.map do |x| x.strip end
-    license = license.map do |x| "'#{x}'" end
+    license.gsub!(/\[.*?\]/, '')
+    license.gsub!("+ file LICENSE", '')
+    license = license.split('|') # CRAN seperates licenses by |
+    license = license.map { |x| x.strip }
+    license = license.map { |x| "'#{x}'" }
     @arch_license = license.join(' ')
 
     # Create 'depends' field for PKGBUILD
@@ -90,36 +120,11 @@ class CreatePkgBuild
       x.nil? || x.empty?
     end
     dependencies = dependencies.flatten
-
-    @arch_depends = []
-    dependencies.each do |dependency|
-      arch_depend = dependency.split(' ')[0]
-
-      # Dependency should be R package if not R itself, so prepend r-
-      # for Arch package name, as per official guidelines
-      arch_depend = "r-#{arch_depend}" unless arch_depend == 'R'
-      arch_depend.downcase!
-
-      version = dependency[/\((.*?)\)/m, 1]  # Regex between parentheses
-
-      # PKGBUILD guidelines do not allow '-' in version number, so
-      # replace with underscore
-      version.gsub!('-', '_') unless version.nil?
-      arch_depend = "#{arch_depend}#{version}"
-
-      replacements = [['≥', '>='], ['≤', '<='], [' ', '']]
-      replacements.each do |replacement|
-        arch_depend.gsub!(replacement[0], replacement[1])
-      end
-
-      arch_depend = "'#{arch_depend}'"
-      @arch_depends.push(arch_depend)
-      
-    end
+    @arch_depends = dependency_parse(dependencies)
 
     unless sysreqs.nil?
       sysreqs.each do |sysreq|
-        sysreq.gsub!(/\(.*?\)/, "")
+        sysreq.gsub!(/\(.*?\)/, '')
         sysreq = sysreq.strip
         sysreq = sysreq.downcase
         sysreq = "'#{sysreq}'"
@@ -129,7 +134,8 @@ class CreatePkgBuild
 
     @arch_depends = @arch_depends.join(' ')
 
-    optdepends = @cran_page_table.split("Suggests:")[1]
+    # Create 'optdepends' field for PKGBUILD
+    optdepends = @cran_page_table.split('Suggests:')[1]
     optdepends = optdepends.split("\n")[0] unless optdepends.nil?
     optdepends = optdepends.split(', ') unless optdepends.nil?
 
@@ -137,35 +143,8 @@ class CreatePkgBuild
     if optdepends.nil?
       @arch_optdepends = ''
     else
-      optdepends.each do |dependency|
-        arch_optdepend = dependency.split(' ')[0]
-        arch_optdepend.downcase!
-
-        # Dependency should be R package if not R itself, so prepend r-
-        # for Arch package name, as per official guidelines
-        arch_optdepend = "r-#{arch_optdepend}" unless arch_optdepend == 'R'
-        arch_optdepend.downcase!
-
-        # Regex between parentheses
-        version = dependency[/\((.*?)\)/m, 1] 
-  
-        # PKGBUILD guidelines do not allow '-' in version number, so
-        # replace with underscore
-        version.gsub!('-', '_') unless version.nil?
-        arch_optdepend = "#{arch_optdepend}#{version}"
-  
-        replacements = [['≥', '>='], ['≤', '<='], [' ', '']]
-        replacements.each do |replacement|
-          arch_optdepend.gsub!(replacement[0], replacement[1])
-        end
-  
-        arch_optdepend = "'#{arch_optdepend}'"
-        @arch_optdepends.push(arch_optdepend)
-
-      end
-
+      @arch_optdepends = dependency_parse(optdepends)
       @arch_optdepends = @arch_optdepends.join(' ')
-
     end
   end
 
