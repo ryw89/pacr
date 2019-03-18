@@ -6,20 +6,22 @@
 #+LANGUAGE:  en
 #+OPTIONS:   H:4 num:nil toc:2 p:t
 
-This project will let you easily generate and install Arch Linux
+This script will let you easily generate and install Arch Linux
 PKGBUILDs for R packages available on CRAN.
 
 * Requirements
 
-- R
 - Ruby
-- git
 - =nokogiri=
 
 * Usage
 
-To be described...
+Simply run pacr.rb cran_pkg (e.g., pacr.rb ggplot2) to generate an
+Arch Linux PKGBUILD.
 
 * TODO Things to do
 
-- Pretty much everything
+- Handle CRAN dependencies that cannot be a proper package name.
+- Filter out CRAN dependencies included in base R install
+- Allow custom overrides of PKGBUILD fields from user-supplied data in
+  yaml or json.
