@@ -6,8 +6,8 @@
 #+LANGUAGE:  en
 #+OPTIONS:   H:4 num:nil toc:2 p:t
 
-This script will let you easily generate and install Arch Linux
-PKGBUILDs for R packages available on CRAN.
+This script will let you easily generate Arch Linux PKGBUILDs for R
+packages available on CRAN.
 
 * Requirements
 
