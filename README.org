@@ -16,8 +16,8 @@ PKGBUILDs for R packages available on CRAN.
 
 * Usage
 
-Simply run pacr.rb cran_pkg (e.g., pacr.rb ggplot2) to generate an
-Arch Linux PKGBUILD.
+Simply run pacr.rb cran_pkg (e.g., pacr.rb ggplot2) to write an
+Arch Linux PKGBUILD to stdout.
 
 * TODO Things to do
 
