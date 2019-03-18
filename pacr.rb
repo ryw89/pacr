@@ -57,7 +57,6 @@ class CreatePkgBuild
       end
 
       arch_depend = "'#{arch_depend}'"
-      puts(arch_depend)
       arch_depends_array.push(arch_depend)
     end
     return(arch_depends_array)
