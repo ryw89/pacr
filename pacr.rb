@@ -16,24 +16,39 @@ class CreatePkgBuild
       puts(response.status.join(' '))
       abort('Exiting pacr.')
     end
-    @cran_page_body = doc.at('body').text
+
+    # Text contains basic package description
+    @cran_page_text = doc.at('body').text
+
+    # Get main table on page containing most CRAN package info
+    @cran_page_table = []
+    table = doc.at('table')
+    table.search('tr').each do |tr|
+      cells = tr.search('th, td')
+      # Newlines present in table cells, at least as parsed by
+      # nokogiri.
+      @cran_page_table.push(cells.text.gsub("\n", ""))
+    end
+
+    @cran_page_table = @cran_page_table.join("\n")
+
   end
 
   # Parse CRAN page for needed info.
   def cran_page_parse
     # Create 'pkgname' field for PKGBUILD
-    @arch_pkgname = "r-#{@pkg}".downcase!
+    @arch_pkgname = "r-#{@pkg}".downcase
 
     # Create 'pkgver' field for PKGBUILD
     # PKGBUILD guidelines do not allow '-' in version number, so
     # replace with underscore
-    @cranver = @cran_page_body.split("Version:\n")[1].split("\n")[0]
+    @cranver = @cran_page_table.split("Version:")[1].split("\n")[0]
     @arch_pkgver = @cranver.gsub('-', '_')
 
     # Create 'pkgdesc' field for PKGBUILD
     # Note, however, that this default description may not meet Arch
     # PKGBUILD guidelines.
-    @arch_pkgdesc = @cran_page_body.split("#{@pkg}:")[1].split("\n")[0].strip
+    @arch_pkgdesc = @cran_page_text.split("#{@pkg}:")[1].split("\n")[0].strip
 
     # Create 'url' field for PKGBUILD
     @arch_url = "https://cran.r-project.org/package=#{@pkg}"
@@ -42,30 +57,31 @@ class CreatePkgBuild
     @arch_arch = "'i686' 'x86_64'"
 
     # Create 'license' field for PKGBUILD
-    license = @cran_page_body.split("License:\n")[1].split("\n")[0]
+    license = @cran_page_table.split("License:")[1].split("\n")[0]
 
     # Remove explanatory license notes inside square brackets
-    # sometimes found on CRAN
+    # and links to license files sometimes found on CRAN 
     license.gsub!(/\[.*?\]/, "")
+    license.gsub!("+ file LICENSE", "")
     license = license.split("|")  # CRAN seperates licenses by |
     license = license.map do |x| x.strip end
     license = license.map do |x| "'#{x}'" end
     @arch_license = license.join(' ')
 
     # Create 'depends' field for PKGBUILD
-    depends   = @cran_page_body.split("Depends:\n")[1]
+    depends   = @cran_page_table.split("Depends:")[1]
     depends   = depends.split("\n")[0] unless depends.nil?
     depends   = depends.split(', ') unless depends.nil?
     
-    imports   = @cran_page_body.split("Imports:\n")[1]
+    imports   = @cran_page_table.split("Imports:")[1]
     imports   = imports.split("\n")[0] unless imports.nil?
     imports   = imports.split(', ') unless imports.nil?
     
-    linkingto = @cran_page_body.split("LinkingTo:\n")[1]
+    linkingto = @cran_page_table.split("LinkingTo:")[1]
     linkingto = linkingto.split("\n")[0] unless linkingto.nil?
     linkingto = linkingto.split(', ') unless linkingto.nil?
     
-    sysreqs   = @cran_page_body.split("SystemRequirements:\n")[1]
+    sysreqs   = @cran_page_table.split("SystemRequirements:")[1]
     sysreqs   = sysreqs.split("\n")[0] unless sysreqs.nil?
     sysreqs   = sysreqs.split(', ') unless sysreqs.nil?
 
@@ -114,8 +130,7 @@ class CreatePkgBuild
 
     @arch_depends = @arch_depends.join(' ')
 
-    # Create 'optdepends' field for PKGBUILD
-    optdepends = @cran_page_body.split("Suggests:\n")[1]
+    optdepends = @cran_page_table.split("Suggests:")[1]
     optdepends = optdepends.split("\n")[0] unless optdepends.nil?
     optdepends = optdepends.split(', ') unless optdepends.nil?
 
@@ -147,8 +162,11 @@ class CreatePkgBuild
   
         arch_optdepend = "'#{arch_optdepend}'"
         @arch_optdepends.push(arch_optdepend)
-        @arch_optdepends = @arch_optdepends.join(' ')
+
       end
+
+      @arch_optdepends = @arch_optdepends.join(' ')
+
     end
   end
 
