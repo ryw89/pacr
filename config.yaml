@@ -1,0 +1,31 @@
+# Standard R packages (Don't count these as dependencies in PKGBUILD)
+notdepend:
+  - r-kernsmooth
+  - r-mass
+  - r-matrix
+  - r-base
+  - r-boot
+  - r-class
+  - r-cluster
+  - r-compiler
+  - r-datasets
+  - r-foreign
+  - r-grdevices
+  - r-graphics
+  - r-grip
+  - r-lattice
+  - r-methods
+  - r-mgcv
+  - r-nlme
+  - r-nnet
+  - r-parallel
+  - r-rpart
+  - r-spatial
+  - r-splines
+  - r-stats
+  - r-stats4
+  - r-survival
+  - r-tcltk
+  - r-tools
+  - r-translations
+  - r-utils
