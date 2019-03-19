@@ -8,8 +8,9 @@ require 'yaml'
 
 # Create an Arch Linux PKGBUILD file from a CRAN package name
 class CreatePkgBuild
-  def initialize(pkg)
+  def initialize(pkg, config)
     @pkg = pkg
+    @config = config
     begin
       url = "https://cran.r-project.org/web/packages/#{@pkg}/index.html"
       doc = Nokogiri::HTML(open(url))
@@ -36,6 +37,10 @@ class CreatePkgBuild
   # Parse array of dependencies, making Arch PKGBUILD-friendly names
   # and versions
   def dependency_parse(dep_array)
+    # Get list of packages not to be counted as dependencies from
+    # config
+    notdepend = @config['notdepend']
+
     arch_depends_array = []
     dep_array.each do |dependency|
       arch_depend = dependency.split(' ')[0]
@@ -58,9 +63,14 @@ class CreatePkgBuild
         arch_depend.gsub!(replacement[0], replacement[1])
       end
 
-      arch_depend = "'#{arch_depend}'"
       arch_depends_array.push(arch_depend)
     end
+
+    # Filter out non-dependencies
+    arch_depends_array.reject! { |x| notdepend.include? x }
+
+    # Apostrophes for PKGBUILD
+    arch_depends_array.map! { |x| "'#{x}'" }
     return(arch_depends_array)
   end
 
@@ -193,10 +203,12 @@ if (File.exist?('~/.config/pacr/config.yaml'))
 elsif (File.exist?('/usr/share/pacr/config.yaml'))
   config = YAML.load_file('/usr/share/pacr/config.yaml')
 else
-  STDERR.puts('Warning: No config file found at /usr/share/pacr/config.yaml or ~/.config/pacr/config.yaml.')
+  STDERR.puts("Warning: No config file found at \
+/usr/share/pacr/config.yaml or ~/.config/pacr/config.yaml.".inspect)
+  config = {"notdepend": [] }
 end
 
 pkg = ARGV[0]
-pkgbuild = CreatePkgBuild.new(pkg)
+pkgbuild = CreatePkgBuild.new(pkg, config)
 pkgbuild.cran_page_parse
 pkgbuild.fill_pkgbuild_template

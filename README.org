@@ -22,7 +22,6 @@ Arch Linux PKGBUILD to stdout.
 * TODO Things to do
 
 - Handle CRAN dependencies that cannot be a proper package name.
-- Filter out CRAN dependencies included in base R install
 - Remove duplicate dependencies in favor of higher version
 - Allow custom overrides of PKGBUILD fields from user-supplied data in
   yaml or json.
