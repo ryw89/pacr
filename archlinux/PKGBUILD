@@ -1,0 +1,24 @@
+_gituser="ryw89"
+_gitrepo="pacr"
+
+pkgname=pacr
+pkgdesc='Generate PKGBUILDs for R packages on CRAN.'
+pkgver=r19.619cc94
+pkgrel=1
+license=('GPL-3')
+depends=('ruby')
+url="https://github.com/${_gituser}/${_gitrepo}"
+arch=('any')
+source=("git+https://github.com/${_gituser}/${_gitrepo}.git")
+sha256sums=('SKIP')
+
+pkgver() {
+  cd "$_gitrepo"
+  printf "r%s.%s" $(git rev-list --count HEAD) $(git rev-parse --short HEAD)
+}
+
+package() {
+  cd "$srcdir/$_gitname"
+  mkdir -p $pkgdir/usr/bin
+  cp ./pacr/pacr.rb $pkgdir/usr/bin/pacr
+}
