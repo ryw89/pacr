@@ -198,7 +198,9 @@ if ARGV.length < 1
 end
 
 # Load config file
-if (File.exist?('~/.config/pacr/config.yaml'))
+if (File.exist?('./config.yaml'))
+  config = YAML.load_file('./config.yaml')
+elsif (File.exist?('~/.config/pacr/config.yaml'))
   config = YAML.load_file('~/.config/pacr/config.yaml')
 elsif (File.exist?('/usr/share/pacr/config.yaml'))
   config = YAML.load_file('/usr/share/pacr/config.yaml')
