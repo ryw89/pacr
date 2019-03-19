@@ -1,13 +1,10 @@
 #!/usr/bin/env ruby
 # coding: utf-8
 
-begin
-  require 'nokogiri'
-rescue LoadError
-  abort('nokogiri not found. Try gem install nokogiri.')
-end
-
+require 'bundler/setup'
+require 'nokogiri'
 require 'open-uri'
+require 'yaml'
 
 # Create an Arch Linux PKGBUILD file from a CRAN package name
 class CreatePkgBuild
