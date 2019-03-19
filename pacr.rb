@@ -153,6 +153,8 @@ class CreatePkgBuild
     dependencies = dependencies.flatten
     @arch_depends = dependency_parse(dependencies)
 
+    # Remove explanatory notes about system requirements sometimes
+    # found in parenthenses on CRAN
     unless sysreqs.nil?
       sysreqs.each do |sysreq|
         sysreq.gsub!(/\(.*?\)/, '')
