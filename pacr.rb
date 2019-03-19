@@ -187,6 +187,15 @@ if ARGV.length < 1
   abort('No R package specified.')
 end
 
+# Load config file
+if (File.exist?('~/.config/pacr/config.yaml'))
+  config = YAML.load_file('~/.config/pacr/config.yaml')
+elsif (File.exist?('/usr/share/pacr/config.yaml'))
+  config = YAML.load_file('/usr/share/pacr/config.yaml')
+else
+  STDERR.puts('Warning: No config file found at /usr/share/pacr/config.yaml or ~/.config/pacr/config.yaml.')
+end
+
 pkg = ARGV[0]
 pkgbuild = CreatePkgBuild.new(pkg)
 pkgbuild.cran_page_parse

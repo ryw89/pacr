@@ -5,7 +5,7 @@ _gitrepo="pacr"
 
 pkgname=pacr
 pkgdesc='Generate PKGBUILDs for R packages on CRAN.'
-pkgver=r19.619cc94
+pkgver=r25.d222bfe
 pkgrel=1
 license=('GPL-3')
 depends=('ruby' 'ruby-bundler' 'ruby-nokogiri')
@@ -20,9 +20,9 @@ pkgver() {
 }
 
 package() {
-  cd "$srcdir/$_gitname"
+  cd "$srcdir/$_gitname/$_gitrepo"
   mkdir -p $pkgdir/usr/bin
-  cp ./pacr/pacr.rb $pkgdir/usr/bin/pacr
-  mkdir -p $pkgdir/usr/share
-  cp ./pacr/config.yaml $pkgdir/usr/share/config.yaml
+  cp pacr.rb $pkgdir/usr/bin/pacr
+  mkdir -p $pkgdir/usr/share/pacr
+  cp config.yaml $pkgdir/usr/share/pacr/config.yaml
 }
