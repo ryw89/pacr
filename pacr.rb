@@ -181,6 +181,10 @@ package() {
 end
 
 # Run script
+if ARGV.length < 1
+  abort('No R package specified.')
+end
+
 pkg = ARGV[0]
 pkgbuild = CreatePkgBuild.new(pkg)
 pkgbuild.cran_page_parse
