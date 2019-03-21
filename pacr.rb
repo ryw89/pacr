@@ -11,6 +11,12 @@ class CreatePkgBuild
   def initialize(pkg, config)
     @pkg = pkg
     @config = config
+
+    # Downcase case all 'override' keys to later allow for case
+    # insenstivity of these keys (e.g., R2jags key is equivalent to
+    # r2jags).
+    @config['override'] = @config['override'].transform_keys(&:downcase)
+
     begin
       url = "https://cran.r-project.org/web/packages/#{@pkg}/index.html"
       @doc = Nokogiri::HTML(open(url))
@@ -270,6 +276,42 @@ valid depdendency, not adding to PKGBUILD.")
       @arch_optdepends = @arch_optdepends.join(' ')
     end
   end
+
+  # Override fields of PKGBUILD, as specified in config.yaml
+  def override(pkgbuild_field, original_val)
+    # For case insensitivity. Recall that keys from config.yaml
+    # were all downcased as well.
+    downcased_pkgname = @pkg.downcase
+
+    if @config['override'][downcased_pkgname].nil?
+      return(original_val)
+    else
+      override = @config['override'][downcased_pkgname]
+    end
+
+    if override[pkgbuild_field].downcase == 'null'
+      return('')
+    end
+
+    if override[pkgbuild_field].nil? || override[pkgbuild_field].empty?
+      return(original_val)
+    end
+
+    return(override[pkgbuild_field])
+
+  end
+
+  # Wrapper around override method for all PKGBUILD fields
+  def override_all
+    @arch_pkgname    = override('pkgname', @arch_pkgname)
+    @arch_pkgver     = override('pkgver', @arch_pkgver)
+    @arch_pkgdesc    = override('pkgdesc', @arch_pkgdesc)
+    @arch_url        = override('url', @arch_url)
+    @arch_arch       = override('arch', @arch_arch)
+    @arch_license    = override('license', @arch_license)
+    @arch_depends    = override('depends', @arch_depends)
+    @arch_optdepends = override('optdepends', @arch_optdepends)
+  end
   
   # Fill template from variables and print to stdout
   def fill_pkgbuild_template
@@ -326,4 +368,5 @@ pkgbuild.arch_arch
 pkgbuild.arch_license
 pkgbuild.arch_depends
 pkgbuild.arch_optdepends
+pkgbuild.override_all
 pkgbuild.fill_pkgbuild_template

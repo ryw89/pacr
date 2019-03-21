@@ -25,8 +25,3 @@ file. =pacr= will look for this file in the current working directory,
 in =~/.config/pacr/config.yaml=, or in =/usr/share/pacr/config.yaml=. The
 included =config.yaml= file includes the list of R libraries installed
 by default when installing R from the Arch Linux repos.
-
-* TODO Things to do
-
-- Allow custom overrides of PKGBUILD fields from user-supplied data in
-  yaml file.

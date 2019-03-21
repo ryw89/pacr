@@ -29,3 +29,17 @@ notdepend:
   - r-tools
   - r-translations
   - r-utils
+
+# Manual override of PKGBUILD fields. Blank strings will be ignored.
+# To override using a literal blank string, use 'null'.
+# Package keys should use the CRAN name, but case does not matter.
+override:
+  R2WinBUGS:
+    pkgname: ''
+    pkgver: ''
+    pkgdesc: "Running 'WinBUGS' and 'OpenBUGS'"
+    url: ''
+    arch: ''
+    license: ''
+    depends: ''
+    optdepends: ''
