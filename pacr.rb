@@ -73,7 +73,7 @@ class CreatePkgBuild
     return(arch_depends_array)
   end
 
-  # Remove dupicate dependencies, favoring higher versions
+  # Remove duplicate dependencies, favoring higher versions
   def rm_dup_deps(dep_array)
     raw_array = dep_array.dup
 
@@ -102,6 +102,9 @@ class CreatePkgBuild
         ver_str = ver
       end
 
+      # Add dependency to no_dup_array if not already present. (It
+      # will be removed later if a higher version of the same library
+      # is found.)
       if not no_dup_dep_names.include?(name)
         no_dup_dep_names.push(name)
         no_dup_dep_vers.push(ver_str)
@@ -111,7 +114,7 @@ class CreatePkgBuild
         # version than what's already in the array, by definition
         next if ver_str == ''
 
-        # Get version of same-named dependecy already in array
+        # Get version of same-named dependency already in array
         name_match_index = no_dup_dep_names.find_index(name)
         ver_already_in_array = no_dup_dep_vers[name_match_index]
 
@@ -124,7 +127,6 @@ class CreatePkgBuild
           no_dup_dep_vers.delete_at(name_match_index)
           no_dup_dep_out.delete_at(name_match_index)
         end
-
       end
     end
     return(no_dup_dep_out)
