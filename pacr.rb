@@ -89,7 +89,8 @@ class CreatePkgBuild
       if dep.include?('=')
         pkg_vers.push(dep.split('=')[1])
       else
-        # Arbitrary negative number for version comparison
+        # Arbitrary negative number for version comparison of
+        # non-versioned dependencies
         pkg_vers.push(-1)
       end
     end
@@ -227,6 +228,13 @@ class CreatePkgBuild
     unless sysreqs.nil?
       sysreqs.each do |sysreq|
         sysreq.gsub!(/\(.*?\)/, '')
+
+        if sysreq.split.length > 1
+          STDERR.puts("Warning: '#{sysreq}' does not appear to be a \
+valid depdendency, not adding to PKGBUILD.")
+          next
+        end
+
         sysreq = sysreq.strip
         sysreq = sysreq.downcase
         @arch_depends.push(sysreq)
@@ -303,7 +311,7 @@ elsif (File.exist?('/usr/share/pacr/config.yaml'))
   config = YAML.load_file('/usr/share/pacr/config.yaml')
 else
   STDERR.puts("Warning: No config file found at \
-/usr/share/pacr/config.yaml or ~/.config/pacr/config.yaml.".inspect)
+/usr/share/pacr/config.yaml or ~/.config/pacr/config.yaml.")
   config = {"notdepend": [] }
 end
 
