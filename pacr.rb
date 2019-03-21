@@ -41,8 +41,6 @@ class CreatePkgBuild
   def dependency_parse(dep_array)
     # Get list of packages not to be counted as dependencies from
     # config
-    notdepend = @config['notdepend']
-
     arch_depends_array = []
     dep_array.each do |dependency|
       arch_depend = dependency.split(' ')[0]
@@ -67,8 +65,12 @@ class CreatePkgBuild
 
       arch_depends_array.push(arch_depend)
     end
+    return(arch_depends_array)
+  end
 
-    # Filter out non-dependencies
+  # Filter out non-dependencies
+  def rm_non_deps(arch_depends_array)
+    notdepend = @config['notdepend']
     arch_depends_array.reject! { |x| notdepend.include? x }
     return(arch_depends_array)
   end
@@ -223,6 +225,9 @@ class CreatePkgBuild
     # Remove duplicates if they exist
     @arch_depends = rm_dup_deps(@arch_depends)
 
+    # Remove non-dependencies
+    @arch_depends = rm_non_deps(@arch_depends)
+
     # Apostrophes for PKGBUILD
     @arch_depends.map! { |x| "'#{x}'" }
 
@@ -241,6 +246,7 @@ class CreatePkgBuild
     else
       @arch_optdepends = dependency_parse(optdepends)
       @arch_optdepends = rm_dup_deps(@arch_optdepends)
+      @arch_optdepends = rm_non_deps(@arch_optdepends)
       @arch_optdepends.map! { |x| "'#{x}'" }
       @arch_optdepends = @arch_optdepends.join(' ')
     end
