@@ -12,7 +12,7 @@ notdepend:
   - r-foreign
   - r-grdevices
   - r-graphics
-  - r-grip
+  - r-grid
   - r-lattice
   - r-methods
   - r-mgcv
