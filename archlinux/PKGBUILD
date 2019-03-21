@@ -4,8 +4,8 @@ _gituser="ryw89"
 _gitrepo="pacr"
 
 pkgname=pacr
-pkgdesc='Generate PKGBUILDs for R packages on CRAN.'
-pkgver=r25.d222bfe
+pkgdesc='Generate PKGBUILDs for R packages on CRAN'
+pkgver=r37.f409d06-1
 pkgrel=1
 license=('GPL-3')
 depends=('ruby' 'ruby-bundler' 'ruby-nokogiri')
