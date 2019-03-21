@@ -5,7 +5,7 @@ _gitrepo="pacr"
 
 pkgname=pacr
 pkgdesc='Generate PKGBUILDs for R packages on CRAN'
-pkgver=r37.f409d06-1
+pkgver=1.0.r0.gf60a87d
 pkgrel=1
 license=('GPL-3')
 depends=('ruby' 'ruby-bundler' 'ruby-nokogiri')
@@ -16,7 +16,7 @@ sha256sums=('SKIP')
 
 pkgver() {
   cd "$_gitrepo"
-  printf "r%s.%s" $(git rev-list --count HEAD) $(git rev-parse --short HEAD)
+  git describe --long --tags | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
 }
 
 package() {
