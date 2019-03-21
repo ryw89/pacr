@@ -70,10 +70,64 @@ class CreatePkgBuild
 
     # Filter out non-dependencies
     arch_depends_array.reject! { |x| notdepend.include? x }
-
-    # Apostrophes for PKGBUILD
-    arch_depends_array.map! { |x| "'#{x}'" }
     return(arch_depends_array)
+  end
+
+  # Remove dupicate dependencies, favoring higher versions
+  def rm_dup_deps(dep_array)
+    raw_array = dep_array.dup
+
+    dep_array.map! { |x| x.gsub('<', '') }
+    dep_array.map! { |x| x.gsub('>', '') }
+
+    pkg_names = dep_array.map { |x| x.split('=')[0] }
+
+    pkg_vers = []
+    dep_array.each do |dep|
+      if dep.include?('=')
+        pkg_vers.push(dep.split('=')[1])
+      else
+        # Arbitrary negative number for version comparison
+        pkg_vers.push(-1)
+      end
+    end
+
+    no_dup_dep_names = []
+    no_dup_dep_vers  = []
+    no_dup_dep_out = []
+    pkg_names.zip(pkg_vers, raw_array).each do |name, ver, raw_pkg_str|
+      if ver.to_f < 0
+        ver_str = ''
+      else
+        ver_str = ver
+      end
+
+      if not no_dup_dep_names.include?(name)
+        no_dup_dep_names.push(name)
+        no_dup_dep_vers.push(ver_str)
+        no_dup_dep_out.push(raw_pkg_str)
+      else
+        # No need to compare if no version; it cannot be a greater
+        # version than what's already in the array, by definition
+        next if ver_str == ''
+
+        # Get version of same-named dependecy already in array
+        name_match_index = no_dup_dep_names.find_index(name)
+        ver_already_in_array = no_dup_dep_vers[name_match_index]
+
+        if ver.to_f > ver_already_in_array.to_f
+          no_dup_dep_names.push(name)
+          no_dup_dep_vers.push(ver_str)
+          no_dup_dep_out.push(raw_pkg_str)
+
+          no_dup_dep_names.delete_at(name_match_index)
+          no_dup_dep_vers.delete_at(name_match_index)
+          no_dup_dep_out.delete_at(name_match_index)
+        end
+
+      end
+    end
+    return(no_dup_dep_out)
   end
 
   # # Create 'pkgname' field for PKGBUILD
@@ -160,10 +214,15 @@ class CreatePkgBuild
         sysreq.gsub!(/\(.*?\)/, '')
         sysreq = sysreq.strip
         sysreq = sysreq.downcase
-        sysreq = "'#{sysreq}'"
         @arch_depends.push(sysreq)
       end
     end
+
+    # Remove duplicates if they exist
+    @arch_depends = rm_dup_deps(@arch_depends)
+
+    # Apostrophes for PKGBUILD
+    @arch_depends.map! { |x| "'#{x}'" }
 
     @arch_depends = @arch_depends.join(' ')
   end
@@ -179,6 +238,8 @@ class CreatePkgBuild
       @arch_optdepends = ''
     else
       @arch_optdepends = dependency_parse(optdepends)
+      @arch_optdepends = rm_dup_deps(@arch_optdepends)
+      @arch_optdepends.map! { |x| "'#{x}'" }
       @arch_optdepends = @arch_optdepends.join(' ')
     end
   end
