@@ -161,7 +161,18 @@ class CreatePkgBuild
 
   # Create 'arch' field for PKGBUILD
   def arch_arch
-    @arch_arch = "'i686' 'x86_64'"
+    arch = @cran_page_table.split("NeedsCompilation:")[1].split("\n")[0]
+
+    if arch.nil?
+      @arch_arch = "'any'"
+      return
+    end
+
+    if arch.downcase.include?('yes')
+      @arch_arch = "'i686' 'x86_64'"
+    else
+      @arch_arch = "'any'"
+    end
   end
 
   # Create 'license' field for PKGBUILD
@@ -262,7 +273,7 @@ pkgver=#{@arch_pkgver}
 pkgrel=1
 pkgdesc=\"#{@arch_pkgdesc}\"
 url=\"https://cran.r-project.org/package=#{@pkg}\"
-arch=('i686' 'x86_64')
+arch=(#{@arch_arch})
 license=(#{@arch_license})
 depends=(#{@arch_depends})
 optdepends=(#{@arch_optdepends})
