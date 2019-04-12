@@ -159,6 +159,7 @@ class CreatePkgBuild
     # Note, however, that this default description may not meet Arch
     # PKGBUILD guidelines.
     @arch_pkgdesc = @cran_page_text.split("#{@pkg}:")[1].split("\n")[0].strip
+    @arch_pkgdesc = @arch_pkgdesc.gsub(/.$/, '')
   end
 
   # Create 'url' field for PKGBUILD
