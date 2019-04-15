@@ -22,6 +22,9 @@ Arch Linux PKGBUILD to stdout.
 The =config.yaml= file contains a list of R packages that should be
 filtered out of the =depends= and =optdepends= fields of the PKGBUILD
 file. =pacr= will look for this file in the current working directory,
-in =~/.config/pacr/config.yaml=, or in =/usr/share/pacr/config.yaml=. The
-included =config.yaml= file includes the list of R libraries installed
-by default when installing R from the Arch Linux repos.
+in =~/.config/pacr/config.yaml=, or in =/usr/share/pacr/config.yaml=.
+The included =config.yaml= file includes the list of R libraries
+installed by default when installing R from the Arch Linux repos.
+
+You may also use the =config.yaml= file to manually override fields of
+a PKGBUILD for an R package. See =config.yaml= for more info.
