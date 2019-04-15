@@ -43,3 +43,15 @@ override:
     license: ''
     depends: ''
     optdepends: ''
+
+# In my experience, icu required as dependency for successful build of
+# stringi
+  stringi:
+    pkgname: ''
+    pkgver: ''
+    pkgdesc: ''
+    url: ''
+    arch: ''
+    license: ''
+    depends: "'r>=2.14', 'icu'"
+    optdepends: ''
