@@ -159,7 +159,7 @@ class CreatePkgBuild
     # Note, however, that this default description may not meet Arch
     # PKGBUILD guidelines.
     @arch_pkgdesc = @cran_page_text.split("#{@pkg}:")[1].split("\n")[0].strip
-    @arch_pkgdesc = @arch_pkgdesc.gsub(/.$/, '')
+    @arch_pkgdesc = @arch_pkgdesc.gsub(/\.$/, '')
   end
 
   # Create 'url' field for PKGBUILD
@@ -238,7 +238,7 @@ class CreatePkgBuild
 
         if sysreq.split.length > 1
           STDERR.puts("Warning: '#{sysreq}' does not appear to be a \
-valid depdendency, not adding to PKGBUILD.")
+valid dependency, not adding to PKGBUILD.")
           next
         end
 
