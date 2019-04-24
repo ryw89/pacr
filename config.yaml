@@ -55,3 +55,15 @@ override:
     license: ''
     depends: "'r>=2.14', 'icu'"
     optdepends: ''
+
+# Removing '.' from data.table package name and renaming R.utils
+# optional dependency
+  data.table:
+    pkgname: 'r-datatable'
+    pkgver: ''
+    pkgdesc: ''
+    url: ''
+    arch: ''
+    license: ''
+    depends: ''
+    optdepends: "'r-bit64' 'r-curl' 'r-utils' 'r-knitr' 'r-xts' 'r-nanotime' 'r-zoo'"
