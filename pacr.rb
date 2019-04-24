@@ -323,7 +323,7 @@ pkgname=#{@arch_pkgname}
 pkgver=#{@arch_pkgver}
 pkgrel=1
 pkgdesc=\"#{@arch_pkgdesc}\"
-url=\"https://cran.r-project.org/package=#{@pkg}\"
+url=\"#{@arch_url}\"
 arch=(#{@arch_arch})
 license=(#{@arch_license})
 depends=(#{@arch_depends})
