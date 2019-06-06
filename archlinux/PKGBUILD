@@ -21,8 +21,6 @@ pkgver() {
 
 package() {
   cd "$srcdir/$_gitname/$_gitrepo"
-  mkdir -p $pkgdir/usr/bin
-  cp pacr.rb $pkgdir/usr/bin/pacr
-  mkdir -p $pkgdir/usr/share/pacr
-  cp config.yaml $pkgdir/usr/share/pacr/config.yaml
+  install -Dm 755 pacr.rb $pkgdir/usr/bin/pacr
+  install -Dm 755 config.yaml $pkgdir/usr/share/pacr/config.yaml
 }
