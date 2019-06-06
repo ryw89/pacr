@@ -77,7 +77,8 @@ class CreatePkgBuild
   # Filter out non-dependencies
   def rm_non_deps(arch_depends_array)
     notdepend = @config['notdepend']
-    arch_depends_array.reject! { |x| notdepend.include? x }
+    # We ignore version numbers for non-dependencies
+    arch_depends_array.reject! { |x| notdepend.include? x.split('>=')[0] }
     return(arch_depends_array)
   end
 
