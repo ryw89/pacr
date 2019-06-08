@@ -196,6 +196,9 @@ class CreatePkgBuild
     license.gsub!('file LICENSE', '')
     license.gsub!('+', '')
 
+    # Remove hyphens -- Not part of Arch guidelines
+    license.gsub!('-', '')
+
     # CRAN seperates licenses by |
     license = license.split('|')
 
