@@ -1,3 +1,6 @@
+# Default CRAN mirror
+cranmirror: 1
+
 # Standard R packages (Don't count these as dependencies in PKGBUILD)
 notdepend:
   - r-kernsmooth
