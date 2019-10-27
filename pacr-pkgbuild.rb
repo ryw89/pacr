@@ -22,7 +22,7 @@ class CreatePkgBuild
       @doc = Nokogiri::HTML(open(url))
     rescue OpenURI::HTTPError => error
       response = error.io
-      abort("#{response.status.join(' ')}\nExiting pacr.")
+      abort("#{response.status.join(' ')}\nExiting pacr-pkgbuild.")
     end
   end
 
