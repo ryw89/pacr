@@ -9,6 +9,7 @@ pkgver=1.0.r0.gf60a87d
 pkgrel=1
 license=('GPL-3')
 depends=('ruby' 'ruby-bundler' 'ruby-nokogiri')
+optdepends=('r')
 url="https://github.com/${_gituser}/${_gitrepo}"
 arch=('any')
 source=("git+https://github.com/${_gituser}/${_gitrepo}.git")
@@ -22,5 +23,7 @@ pkgver() {
 package() {
   cd "$srcdir/$_gitname/$_gitrepo"
   install -Dm 755 pacr.rb $pkgdir/usr/bin/pacr
+  install -Dm 755 pacr-pkgbuild.rb $pkgdir/usr/bin/pacr-pkgbuild
+  install -Dm 755 pacr-depcheck.r $pkgdir/usr/bin/pacr-depcheck
   install -Dm 755 config.yaml $pkgdir/usr/share/pacr/config.yaml
 }
