@@ -10,7 +10,7 @@ def make_pkgbuild(pkgname, pacr_depcheck_path, pacr_pkgbuild_path, force)
   arch_pkgname = 'r-' + pkgname.downcase
   pkgbuild = `#{pacr_pkgbuild_path} #{pkgname}`
 
-  if $CHILD_STATUS.exitstatus == 0
+  if $?.exitstatus == 0
     begin
       Dir.mkdir(arch_pkgname)
     rescue Errno::EEXIST
@@ -21,7 +21,7 @@ def make_pkgbuild(pkgname, pacr_depcheck_path, pacr_pkgbuild_path, force)
     File.open("#{arch_pkgname}/PKGBUILD", 'w') { |file| file.write(pkgbuild) }
     puts("Wrote PKGBUILD for #{arch_pkgname}.")
   else
-    warn("#{pacr_pkgbuild_path} #{pkgname} failed with exit status #{$CHILD_STATUS.exitstatus}.")
+    warn("#{pacr_pkgbuild_path} #{pkgname} failed with exit status #{$?.exitstatus}.")
   end
 end
 
@@ -83,8 +83,10 @@ curdir = __dir__ + '/'
 pacr_depcheck_path = `which pacr-depcheck 2>/dev/null`
 pacr_pkgbuild_path = `which pacr-pkgbuild 2>/dev/null`
 
-pacr_depcheck_path = curdir + 'pacr-depcheck.r' if pacr_depcheck_path.empty?
+pacr_depcheck_path.strip!
+pacr_pkgbuild_path.strip!
 
+pacr_depcheck_path = curdir + 'pacr-depcheck.r' if pacr_depcheck_path.empty?
 pacr_pkgbuild_path = curdir + 'pacr-pkgbuild.rb' if pacr_pkgbuild_path.empty?
 
 # Get package dependencies using pacr-depcheck script.
