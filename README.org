@@ -13,11 +13,25 @@ packages available on CRAN.
 
 - Ruby
 - =nokogiri=
+- R (optional, for determining package dependencies using R's
+  =tools::package_dependencies()= function.)
 
 * Usage
 
-Simply run =pacr.rb cran_pkg= (e.g., =pacr.rb ggplot2=) to write an
-Arch Linux PKGBUILD to stdout.
+Simply run =pacr.rb --pkg cran_pkg= (e.g., =pacr.rb --pkg ggplot2=) to
+write an Arch Linux PKGBUILD for a CRAN package and all of its
+dependencies (recursively) to new directories. The new directories
+will follow Arch Linux package naming guidelines, e.g., =r-ggplot2=.
+
+Optional command-line flags:
+- n: Do not generate PKGBUILDs for dependencies recursively.
+- f: Overwrite PKGBUILD files that already exist.
+- d: Dry run. Just test pacr.rb, but do not actually write any files.
+
+(Example: =pacr.rb -nf --pkg ggplot2=.)
+
+Alternatively, =pacr-pkgbuild.rb cran_pkg= can be used to write a
+PKGBUILD of a single package to STDOUT.
 
 The =config.yaml= file contains a list of R packages that should be
 filtered out of the =depends= and =optdepends= fields of the PKGBUILD
@@ -27,4 +41,6 @@ The included =config.yaml= file includes the list of R libraries
 installed by default when installing R from the Arch Linux repos.
 
 You may also use the =config.yaml= file to manually override fields of
-a PKGBUILD for an R package. See =config.yaml= for more info.
+a PKGBUILD for an R package, as well as to specify a default CRAN
+mirror for use with =tools::package_dependencies()=. See =config.yaml=
+for more info.
