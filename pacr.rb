@@ -104,10 +104,6 @@ pkg_deps.each do |pkg_dep|
   pkg_deps_filtered.push(pkg_dep) unless notdepend.include? pkg_dep.downcase
 end
 
-# TODO: Argument flags with optparse.
-# Want: recursive dependencies flag, force overwrite flag,
-# dry run flag.
-
 # Make PKGBUILD for main package
 if dry_run == false
   make_pkgbuild(pkg, pacr_depcheck_path, pacr_pkgbuild_path, force)
